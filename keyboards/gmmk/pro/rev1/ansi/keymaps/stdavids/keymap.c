@@ -147,7 +147,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max)
 
     // Invert the capslock key when capslock is enabled
     if (host_keyboard_led_state().caps_lock) {
-        rgb_matrix_invert_color(RGB_IDX_CAPS);
+        rgb_matrix_set_color_all(RGB_RED);
     }
 
     // When off of the base layer, highlight all bound keys
