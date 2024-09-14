@@ -11,6 +11,9 @@ compile: | pyenv
 setup: | pyenv
 	cd ../ && $(QMK) setup
 
+clean:
+	rm -f ../$(subst /,_,$(KB))_$(KM).bin
+
 pyenv:
 	python3 -m venv $@
 	source $@/bin/activate && pip install qmk
