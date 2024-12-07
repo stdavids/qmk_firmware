@@ -2,12 +2,22 @@
 
 bool g_dbg_state = false;
 
+// Defined in 'qmk_firmware/quantum/rgb_matrix/rgb_matrix.c'. Used to 'flush' the RGB buffer. Most
+// functions are called in a pipeline that ends with a call to this function, however certain
+// actions (e.g. shutdown) do not and require a direct call.
+//
 extern void rgb_matrix_update_pwm_buffers(void);
 
+// Defined in 'qmk_firmware/drivers/led/aw20216s.c'. We use '216' rather than the
+// AW20216S_PWM_REGISTER_COUNT macro because it is not yet defined
+//
+extern uint8_t g_pwm_buffer[AW20216S_DRIVER_COUNT][216];
 
 // This code should only work on devices that use the aw20216s LED driver. This code is based on the
-// rgb_matrix_set_color function found in qmk_firmware/drivers/led/aw20216s.c.
-uint8_t g_pwm_buffer[AW20216S_DRIVER_COUNT][216]; // AW20216S_PWM_REGISTER_COUNT = 216
+// rgb_matrix_set_color function found in qmk_firmware/drivers/led/aw20216s.c. It allows us to read
+// the RGB value of a specific key. Use RGB_IDX_* macros (defined in config.h) to select the key to
+// read.
+//
 RGB rgb_matrix_get_color(int index)
 {
     RGB rgb;
@@ -20,6 +30,8 @@ RGB rgb_matrix_get_color(int index)
 }
 
 
+// For the given key index, set the RGB to the inverse
+//
 void rgb_matrix_invert_color(int index)
 {
     RGB current, inverse;
@@ -30,15 +42,21 @@ void rgb_matrix_invert_color(int index)
     rgb_matrix_set_color(index, inverse.r, inverse.g, inverse.b);
 }
 
-
+// These are new keycodes that can be assigned to keys in the keymaps below. The first custom
+// keycode should be set to SAFE_RANGE and all subsequent keycodes should just have the name of the
+// new keycode and not the
+//
 enum custom_keycodes {
     STD_DBG = SAFE_RANGE,
 };
 
-
+//
+//
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
-    // BASE LAYER
+    // Base layer (probably don't want to mess with this very much... this is the normal keyboard
+    // mode which should reflect the keycaps)
+    //
     [0] = LAYOUT(
         KC_ESC,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_PSCR,          KC_MUTE,
         KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,          KC_DEL,
@@ -49,16 +67,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     // FUNCTION LAYER
+    //
     [1] = LAYOUT(
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          XXXXXXX,
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,  EE_CLR,          XXXXXXX,
+        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          KC_MPLY,
+        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, EE_CLR,           XXXXXXX,
         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, QK_BOOT,          XXXXXXX,
         XXXXXXX, XXXXXXX, XXXXXXX, STD_DBG, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          XXXXXXX,          XXXXXXX,
         XXXXXXX,          XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, NK_TOGG, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          XXXXXXX, XXXXXXX, XXXXXXX,
-        XXXXXXX, XXXXXXX, XXXXXXX,                            XXXXXXX,                            XXXXXXX, _______,   MO(2), XXXXXXX, XXXXXXX, XXXXXXX
+        XXXXXXX, XXXXXXX, XXXXXXX,                            XXXXXXX,                            XXXXXXX, _______, MO(2),   XXXXXXX, XXXXXXX, XXXXXXX
     ),
 
     // RGB LAYER
+    //
     [2] = LAYOUT(
         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          RGB_TOG,
         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          XXXXXXX,
@@ -70,10 +90,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 };
 
-
+// Similar to the keymaps above but for the rotary encoder turning
+//
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
     [0] = { ENCODER_CCW_CW( KC_VOLD, KC_VOLU ) }, // BASE LAYER
-    [1] = { ENCODER_CCW_CW( XXXXXXX, XXXXXXX ) }, // FUNCTION LAYER
+    [1] = { ENCODER_CCW_CW( KC_MPRV, KC_MNXT ) }, // FUNCTION LAYER
     [2] = { ENCODER_CCW_CW( RGB_VAD, RGB_VAI ) }  // RGB LAYER
 };
 

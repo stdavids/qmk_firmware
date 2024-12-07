@@ -5,14 +5,14 @@
     #define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_GRADIENT_UP_DOWN     // Sets the default mode, if none has been set
     #define RGB_MATRIX_DEFAULT_ON   true                            // Sets the default enabled state, if none has been set
     #define RGB_MATRIX_TIMEOUT      0                               // Number of milliseconds to wait until rgb automatically turns off
-                                                                    //
+
     #define RGB_MATRIX_DEFAULT_VAL  RGB_MATRIX_MAXIMUM_BRIGHTNESS   // Sets the default brightness value, if none has been set
     #define RGB_MATRIX_DEFAULT_HUE  96                              // Sets the default hue value, if none has been set
     #define RGB_MATRIX_DEFAULT_SAT  192                             // Sets the default saturation value, if none has been set
     #define RGB_MATRIX_DEFAULT_SPD  96                              // Sets the default animation speed, if none has been set
 
     ////////////////////////////////////////////////////////////
-    //              INDEX VALUES FOR PER-KEY RGB
+    //              INDEX VALUES FOR PER-KEY RGB              //
     ////////////////////////////////////////////////////////////
 
     #define RGB_IDX_ESC     0
@@ -55,7 +55,7 @@
     #define RGB_IDX_U       41
     #define RGB_IDX_I       46
     #define RGB_IDX_O       52
-    #define RGB_IDX_P       5
+    #define RGB_IDX_P       58
     #define RGB_IDX_LBKT    63
     #define RGB_IDX_RBKT    89
     #define RGB_IDX_BSLASH  93
